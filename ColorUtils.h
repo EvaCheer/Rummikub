@@ -3,3 +3,4 @@
 #include <iostream>
 
 const char* colorToString(Color c);
+const char* colorToAnsi(Color c);

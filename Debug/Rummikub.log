@@ -1,5 +1,2 @@
-﻿  ColorUtils.cpp
-  Rummikub.cpp
-  Generating Code...
-D:\Other stuff\Projects\FMI\UP\Rummikub\ColorUtils.cpp(18): warning C4715: 'colorToString': not all control paths return a value
+﻿  Rummikub.cpp
   Rummikub.vcxproj -> D:\Other stuff\Projects\FMI\UP\Rummikub\Debug\Rummikub.exe

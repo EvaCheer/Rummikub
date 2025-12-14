@@ -1,4 +1,6 @@
 #include "TileSet.h"
+#include <cstdlib>
+
 
 TileSet::TileSet() {
 	size = 0;
@@ -20,4 +22,19 @@ void TileSet::initialize() {
 			tiles[size++] = Tile(c, n);
 		}
 	}
+}
+
+
+void TileSet::shuffle() {
+	for (int i = size - 1; i > 0; i--) {
+		int j = std::rand() % (i + 1);
+
+		Tile temp = tiles[i];
+		tiles[i] = tiles[j];
+		tiles[j] = temp;
+	}
+}
+
+Tile TileSet::drawATile() {
+	return tiles[--size];
 }

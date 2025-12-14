@@ -16,3 +16,12 @@ const char* colorToString(Color c) {
 	default: "unknown";
 	}
 }
+const char* colorToAnsi(Color c) {
+	switch (c) {
+	case Color::RED:    return "\033[31m";
+	case Color::BLUE:   return "\033[34m";
+	case Color::YELLOW: return "\033[33m";
+	case Color::BLACK:  return "\033[30;100m";
+	default:            return "\033[0m";
+	}
+}

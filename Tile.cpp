@@ -22,5 +22,7 @@ int Tile::getNumber() const {
 
 
 void Tile::print() const {
-	std::cout << number << " " << colorToString(color);
+	std::cout << colorToAnsi(color)
+		<< number
+		<< "\033[0m";
 }

@@ -11,6 +11,8 @@ public:
 
 	int getSize() const;
 	Tile getTile(int index) const;
+	void shuffle();
+	Tile drawATile();
 
 private:
 	void initialize();
