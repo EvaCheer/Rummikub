@@ -53,6 +53,19 @@ Player::Player(const Player& p)
 	copyFrom(p);
 }
 
+Tile Player::getTile(int index) const
+{
+	if (index < 0 || index >= size) {
+		throw "Invalid index when getting a tile from hand.";
+	}
+	return hand[index];
+}
+
+int Player::getSize() const
+{
+	return size;
+}
+
 Player& Player::operator=(const Player& p)
 {
 	if (&p != this) {
@@ -86,7 +99,7 @@ void Player::printHand() const
 	std::cout << std::endl;
 }
 
-void Player::removeATile(int index)
+void Player::removeFromHand(int index)
 {
 	if (index < 0 || index >= size) {
 		throw "Invalid index on removing a tile from hand.";
@@ -95,4 +108,18 @@ void Player::removeATile(int index)
 	//decrement the size
 	hand[index] = hand[size - 1];
 	size--;
+}
+
+int Player::handScore() const
+{
+	int sum = 0;
+	for (int i = 0; i < size; i++) {
+		sum += hand[i].getNumber();
+	}
+	return sum;
+}
+
+bool Player::isValidIndex(int index) const
+{
+	return index >= 0 && index < size;
 }

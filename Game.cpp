@@ -1,12 +1,13 @@
 #include "Game.h"
+#include "Player.h"
 
 Game::Game() : playerCount(0), currentPlayer(0)
 {
-	std::cout << "Enter number of players (2–4): ";
+	std::cout << "Enter number of players (2-4): ";
 	std::cin >> playerCount;
 
 	while (playerCount < 2 || playerCount > 4) {
-		std::cout << "Invalid number. Enter 2–4: ";
+		std::cout << "Invalid number. Enter 2-4: ";
 		std::cin >> playerCount;
 	}
 
@@ -28,48 +29,197 @@ void Game::run()
 {
 	bool running = true;
 	while (running) {
-		Player player = players[currentPlayer];
+		Player& player = players[currentPlayer];
+		//TODO clear screen?
 		std::cout << "\n--- Player " << currentPlayer + 1 << "'s turn ---" << std::endl;
-
+		//TODO print table
 		handleTurn(player);
 		currentPlayer = (currentPlayer + 1) % playerCount;
 	}
 }
+void Game::printMenu() const
+{
+	std::cout << "1 - Select tile from hand" << std::endl;
+	std::cout << "2 - Split table row" << std::endl;
+	std::cout << "3 - Merge table rows" << std::endl;
+	std::cout << "4 - Draw a tile" << std::endl;
+	std::cout << "5 - Finish turn" << std::endl;
+	std::cout << "6 - Reset turn" << std::endl;
+}
 
 void Game::handleTurn(Player& player)
 {
-	int turnOver = 0;
+	Player playerSnapshot = player;
+	Table tableSnapshot = table;
+
+	bool turnOver = 0;
+	bool hasPlacedTile = 0;
+
 	while (!turnOver) {
+		table.print();
+		std::cout << "Your hand: " << std::endl;
+		player.printHand();
 		printMenu();
+
 		int choice;
 		std::cin >> choice;
 
 		switch (choice) {
 		case 1:
-			player.drawATile(bag);
-			std::cout << "You drew a tile."<<std::endl;
-			turnOver = 1;
+			if (handlePlaceTile(player))
+				hasPlacedTile = true;
 			break;
 		case 2:
-			std::cout << "plays a tile";
+			handleSplit();
 			break;
 		case 3:
-			player.printHand();
+			handleMerge();
 			break;
 		case 4:
+			//TODO: Add a winning condition: if the TileSet is empty
+			player.drawATile(bag);
 			turnOver = 1;
+			break;
+		case 5:
+			if (canFinishTurn(hasPlacedTile))
+				turnOver = true;
+			break;
+		case 6:
+			player = playerSnapshot;
+			table = tableSnapshot;
+			hasPlacedTile = 0;
+			std::cout << "Turn reset." << std::endl;
 			break;
 		default:
 			std::cout << "Invalid choice." << std::endl;
 		}
 	}
-
 }
 
-void Game::printMenu() const
+bool Game::handlePlaceTile(Player& player) {
+	int tileIndex;
+	std::cout << "Select tile index from hand: ";
+	std::cin >> tileIndex;
+
+	if (!player.isValidIndex(tileIndex)) {
+		std::cout << "Invalid tile index." << std::endl;
+		return false;
+	}
+
+	Tile tile = player.getTile(tileIndex);
+
+	int choice;
+	std::cout << "1 - Place on existing sequence" << std::endl;
+	std::cout << "2 - Start new sequence" << std::endl;
+	std::cin >> choice;
+
+	if (choice == 2) {
+		table.addSequence(tile);
+		player.removeFromHand(tileIndex);
+		return true;
+	}
+
+	if (choice == 1) {
+		int seqIndex;
+		std::cout << "Select sequence index: ";
+		std::cin >> seqIndex;
+
+		if (!table.isValidIndex(seqIndex)) {
+			std::cout << "Invalid sequence index." << std::endl;
+			return false;
+		}
+
+		int side;
+		std::cout << "1 - Front" << std::endl; 
+		std::cout << "2 - Back" << std::endl;
+		std::cin >> side;
+
+		bool success = 0;
+		if (side == 1)
+			success = table.placeTileFront(seqIndex, tile);
+		else if (side == 2)
+			success = table.placeTileBack(seqIndex, tile);
+		else {
+			std::cout << "Invalid input." << std::endl;
+			return false;
+		}
+			
+		if (!success) {
+			std::cout << "Tile cannot be placed there." << std::endl;
+			return false;
+		}
+
+		player.removeFromHand(tileIndex);
+		return true;
+	}
+
+	std::cout << "Invalid option.\n";
+	return false;
+}
+
+void Game::handleSplit()
 {
-	std::cout << "1 - Draw a tile" << std::endl;
-	std::cout << "2 - Play a tile(later)" << std::endl;
-	std::cout << "3 - Show hand" << std::endl;
-	std::cout << "4 - End turn" << std::endl;
+	int seqIndex, splitIndex;
+	std::cout << "Sequence index: ";
+	std::cin >> seqIndex;
+	std::cout << "Split position: ";
+	std::cin >> splitIndex;
+
+	if (!table.splitSequence(seqIndex, splitIndex)) {
+		std::cout << "Invalid split.\n";
+	}
 }
+
+void Game::handleMerge()
+{
+	int a, b;
+	std::cout << "First sequence index: ";
+	std::cin >> a;
+	std::cout << "Second sequence index: ";
+	std::cin >> b;
+
+	if (!table.mergeSequences(a, b)) {
+		std::cout << "Cannot merge these sequences.\n";
+	}
+}
+
+bool Game::canFinishTurn(bool hasPlacedTile) const
+{
+	if (!hasPlacedTile) {
+		std::cout << "You must place at least one tile or draw.\n";
+		return false;
+	}
+
+	if (!table.isValid()) {
+		std::cout << "Table is invalid.\n";
+		return false;
+	}
+
+	return true;
+}
+
+bool Game::checkWinAndPrintScore() const
+{
+
+	const Player& winner = players[currentPlayer];
+
+	if (winner.getSize() != 0)
+		return false;
+
+	std::cout << "Player " << currentPlayer + 1 << " wins!" << std::endl;
+
+	std::cout << "Final scores: " << std::endl;
+
+	for (int i = 0; i < playerCount; i++) {
+		int score = players[i].handScore();
+
+		if (i == currentPlayer) {
+			std::cout << "Player " << i + 1 << ": 0 (winner)" << std::endl;
+		}
+		else {
+			std::cout << "Player " << i + 1 << ": -" << score << std::endl;
+		}
+	}
+	return true;
+}
+

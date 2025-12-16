@@ -15,10 +15,14 @@ public:
 	Player();
 	Player(TileSet& tileSet);
 	Player(const Player& p);
+	Tile getTile(int index) const;
+	int getSize() const;
 	Player& operator=(const Player & p);
 	~Player();
 
 	void drawATile(TileSet& tileSet);
 	void printHand() const;
-	void removeATile(int index);
+	void removeFromHand(int index);
+	int handScore() const;
+	bool isValidIndex(int index) const;
 };

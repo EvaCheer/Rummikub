@@ -155,6 +155,8 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Rummikub.cpp" />
+    <ClCompile Include="Sequence.cpp" />
+    <ClCompile Include="Table.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileSet.cpp" />
   </ItemGroup>
@@ -164,6 +166,8 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="Headers.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Sequence.h" />
+    <ClInclude Include="Table.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="TileSet.h" />
   </ItemGroup>

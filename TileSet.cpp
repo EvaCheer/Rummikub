@@ -35,6 +35,7 @@ void TileSet::shuffle() {
 	}
 }
 
+//TODO: handle size = 0; tileSet isEmpty()
 Tile TileSet::drawATile() {
 	return tiles[--size];
 }
