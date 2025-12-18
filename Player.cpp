@@ -93,8 +93,18 @@ void Player::drawATile(TileSet& tileSet)
 void Player::printHand() const
 {
 	for (int i = 0; i < size; i++) {
+		std::cout << i << " ";
+		if (hand[i].getNumber() > 9 && i < 10) {
+			std::cout << " ";
+		}
+	}
+	std::cout << std::endl;
+	for (int i = 0; i < size; i++) {
 		hand[i].print();
 		std::cout << " ";
+		if (i > 9 && hand[i].getNumber() < 10) {
+			std::cout << " ";
+		}
 	}
 	std::cout << std::endl;
 }
@@ -122,4 +132,56 @@ int Player::handScore() const
 bool Player::isValidIndex(int index) const
 {
 	return index >= 0 && index < size;
+}
+
+void Player::sortHandByColor()
+{
+	for (int i = 0; i < size - 1; i++) {
+		int minIndex = i;
+
+		for (int j = i + 1; j < size; j++) {
+			// Compare by color first
+			if ((int)hand[j].getColor() < (int)hand[minIndex].getColor()) {
+				minIndex = j;
+			}
+			// If colors are equal, compare by number
+			else if (hand[j].getColor() == hand[minIndex].getColor() &&
+				hand[j].getNumber() < hand[minIndex].getNumber()) {
+				minIndex = j;
+			}
+		}
+
+		// Swap tiles
+		if (minIndex != i) {
+			Tile temp = hand[i];
+			hand[i] = hand[minIndex];
+			hand[minIndex] = temp;
+		}
+	}
+}
+
+void Player::sortHandByNumber()
+{
+	for (int i = 0; i < size - 1; i++) {
+		int minIndex = i;
+
+		for (int j = i + 1; j < size; j++) {
+			// Compare by number first
+			if (hand[j].getNumber() < hand[minIndex].getNumber()) {
+				minIndex = j;
+			}
+			// If numbers are equal, compare by color
+			else if (hand[j].getNumber() == hand[minIndex].getNumber() &&
+				(int)hand[j].getColor() < (int)hand[minIndex].getColor()) {
+				minIndex = j;
+			}
+		}
+
+		// Swap tiles
+		if (minIndex != i) {
+			Tile temp = hand[i];
+			hand[i] = hand[minIndex];
+			hand[minIndex] = temp;
+		}
+	}
 }

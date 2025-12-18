@@ -26,4 +26,7 @@ public:
 
 	void printMenu() const;
 
+
+	bool handlePlaceSequence(Player& player);
+	void selectionSortDesc(int* arr, int n);
 };

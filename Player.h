@@ -25,4 +25,6 @@ public:
 	void removeFromHand(int index);
 	int handScore() const;
 	bool isValidIndex(int index) const;
+	void sortHandByColor();
+	void sortHandByNumber();
 };

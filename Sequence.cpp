@@ -140,15 +140,51 @@ bool Sequence::canAddBack(const Tile& t) const
 		return false;
 	if (size == 0) return true;
 
-	//if the sequence is a run, the new tile must be the same color
-	//and it needs to me 1 digit bigger than last tile
+	if (size == 1) {
+		const Tile& a = sequence[0];
+		//Can become run
+		if (t.getColor() == a.getColor() &&
+			t.getNumber() == a.getNumber() + 1)
+			return true;
+
+		//Can become group
+		if (t.getNumber() == a.getNumber() &&
+			t.getColor() != a.getColor())
+			return true;
+
+		return false;
+	}
+
+	if (size == 2) {
+		const Tile& a = sequence[0];
+		const Tile& b = sequence[1];
+
+		//Run forming
+		if (a.getColor() == b.getColor()) {
+			return t.getColor() == a.getColor() &&
+				t.getNumber() == b.getNumber() + 1;
+		}
+
+		// Group forming
+		if (a.getNumber() == b.getNumber()) {
+			if (t.getNumber() != a.getNumber())
+				return false;
+
+			if (t.getColor() == a.getColor() ||
+				t.getColor() == b.getColor())
+				return false;
+
+			return true;
+		}
+
+		return false;
+	}
+
 	if (isRun()) {
 		return t.getColor() == sequence[0].getColor() &&
 			t.getNumber() == sequence[size - 1].getNumber() + 1;
 	}
 
-	//if the sequence is a group, the new tile must be a different color
-	//and the same number as any other tile
 	if (isGroup()) {
 		if (t.getNumber() != sequence[0].getNumber())
 			return false;

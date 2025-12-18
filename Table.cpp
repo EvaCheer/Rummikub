@@ -24,6 +24,14 @@ void Table::addSequence(const Tile& tile)
 	sequences[size++] = newSeq;
 }
 
+void Table::addSequence(const Sequence& s) {
+	if (size >= 20) {
+		throw "Table is full, cannot add more sequences.";
+	}
+
+	sequences[size++] = s;
+}
+
 bool Table::placeTileFront(int seqIndex, const Tile& t)
 {
 	if (seqIndex < 0 || seqIndex >= size)

@@ -14,6 +14,7 @@ public:
 
 	//to add a row we must always initiate it with a tile
 	void addSequence(const Tile& tile);
+	void addSequence(const Sequence& s);
 	bool placeTileFront(int seqIndex, const Tile& t);
 	bool placeTileBack(int seqIndex, const Tile& t);
 

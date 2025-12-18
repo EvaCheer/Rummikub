@@ -39,12 +39,15 @@ void Game::run()
 }
 void Game::printMenu() const
 {
-	std::cout << "1 - Select tile from hand" << std::endl;
-	std::cout << "2 - Split table row" << std::endl;
-	std::cout << "3 - Merge table rows" << std::endl;
-	std::cout << "4 - Draw a tile" << std::endl;
-	std::cout << "5 - Finish turn" << std::endl;
-	std::cout << "6 - Reset turn" << std::endl;
+	std::cout << "1 - Place a tile" << std::endl;
+	std::cout << "2 - Place a sequence" << std::endl;
+	std::cout << "3 - Split table row" << std::endl;
+	std::cout << "4 - Merge table rows" << std::endl;
+	std::cout << "5 - Draw a tile" << std::endl;
+	std::cout << "6 - Finish turn" << std::endl;
+	std::cout << "7 - Reset turn" << std::endl;
+	std::cout << "8 - Sort hand by number" << std::endl;
+	std::cout << "9 - Sort hand by color" << std::endl;
 }
 
 void Game::handleTurn(Player& player)
@@ -70,25 +73,35 @@ void Game::handleTurn(Player& player)
 				hasPlacedTile = true;
 			break;
 		case 2:
-			handleSplit();
+			handlePlaceSequence(player);
+			hasPlacedTile = true;
 			break;
 		case 3:
-			handleMerge();
+			handleSplit();
 			break;
 		case 4:
+			handleMerge();
+			break;
+		case 5:
 			//TODO: Add a winning condition: if the TileSet is empty
 			player.drawATile(bag);
 			turnOver = 1;
 			break;
-		case 5:
+		case 6:
 			if (canFinishTurn(hasPlacedTile))
 				turnOver = true;
 			break;
-		case 6:
+		case 7:
 			player = playerSnapshot;
 			table = tableSnapshot;
 			hasPlacedTile = 0;
 			std::cout << "Turn reset." << std::endl;
+			break;
+		case 8:
+			player.sortHandByNumber();
+			break;
+		case 9:
+			player.sortHandByColor();
 			break;
 		default:
 			std::cout << "Invalid choice." << std::endl;
@@ -223,3 +236,61 @@ bool Game::checkWinAndPrintScore() const
 	return true;
 }
 
+bool Game::handlePlaceSequence(Player& player) {
+	int size = 0;
+	std::cout << "How long is the sequence?" << std::endl;
+	std::cin >> size;
+
+	if (size < 3) {
+		std::cout << "A sequence must have at least 3 tiles.\n";
+		return false;
+	}
+
+	int* indexes = new int[size];
+	Sequence s;
+	std::cout << "Enter indexes in sequence order: ";
+
+	for (int i = 0; i < size; i++) {
+		int idx;
+		std::cin >> idx;
+
+		if (idx < 0 || idx >= player.getSize()) {
+			std::cout << "Invalid index.\n";
+			delete[] indexes;
+			return false;
+		}
+
+		indexes[i] = idx;
+		s.addBack(player.getTile(idx));
+	}
+	if (!s.isValid()) {
+		std::cout << "Sequence is not valid.\n";
+		delete[] indexes;
+		return false;
+	}
+	selectionSortDesc(indexes, size);
+	for (int i = 0; i < size; i++) {
+		player.removeFromHand(indexes[i]);
+	}
+	table.addSequence(s);
+	delete[] indexes;
+	return true;
+
+}
+
+void Game::selectionSortDesc(int* arr, int n)
+{
+	for (int i = 0; i < n - 1; i++) {
+		int maxIndex = i;
+
+		for (int j = i + 1; j < n; j++) {
+			if (arr[j] > arr[maxIndex]) {
+				maxIndex = j;
+			}
+		}
+
+		int temp = arr[i];
+		arr[i] = arr[maxIndex];
+		arr[maxIndex] = temp;
+	}
+}
