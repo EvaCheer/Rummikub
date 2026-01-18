@@ -1,2 +1,9 @@
 ﻿  Game.cpp
+  Player.cpp
+  Rummikub.cpp
+  Sequence.cpp
+  Table.cpp
+  Tile.cpp
+  TileSet.cpp
+  Generating Code...
   Rummikub.vcxproj -> D:\Other stuff\Projects\FMI\UP\Rummikub\Debug\Rummikub.exe

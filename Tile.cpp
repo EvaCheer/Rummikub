@@ -1,3 +1,17 @@
+/**
+*
+* Solution to course project # 7
+* Introduction to programming course
+* Faculty of Mathematics and Informatics of Sofia University
+* Winter semester 2025/2026
+*
+* @author Zlatina Georgieva
+* @idnumber 0MI0600109
+* @compiler VC
+*
+* <handles a tile>
+*
+*/
 #include "Tile.h"
 #include "ColorUtils.h"
 #include <iostream>
@@ -25,4 +39,14 @@ void Tile::print() const {
 	std::cout << colorToAnsi(color)
 		<< number
 		<< "\033[0m";
+}
+
+Tile Tile::Joker() {
+	Tile t;
+	t.joker = true;
+	return t;
+}
+
+bool Tile::isJoker() const {
+	return joker;
 }

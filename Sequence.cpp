@@ -1,3 +1,19 @@
+/**
+*
+* Solution to course project # 7
+* Introduction to programming course
+* Faculty of Mathematics and Informatics of Sofia University
+* Winter semester 2025/2026
+*
+* @author Zlatina Georgieva
+* @idnumber 0MI0600109
+* @compiler VC
+*
+* <an array of tiles creates a sequence>
+* <used to be put on table>
+* <handles logic checks>
+*
+*/
 #include "Sequence.h"
 #include <iostream>
 
@@ -74,6 +90,10 @@ bool Sequence::canAddFront(const Tile& t) const
 	if (size == 0)
 		return true;
 
+	if (t.isJoker())
+		return true;
+
+
 	if (size == 1) {
 		const Tile& a = sequence[0];
 		//Can become run
@@ -138,7 +158,13 @@ bool Sequence::canAddBack(const Tile& t) const
 {
 	if (size >= 13)
 		return false;
-	if (size == 0) return true;
+
+	if (size == 0) 
+		return true;
+
+	if (t.isJoker())
+		return true;
+
 
 	if (size == 1) {
 		const Tile& a = sequence[0];
@@ -229,6 +255,7 @@ bool Sequence::canMergeWith(const Sequence& other) const
 	return size + other.size <= 14;
 }
 
+//merges invalid sequences too
 bool Sequence::mergeWith(const Sequence& other)
 {
 	if (!canMergeWith(other))
