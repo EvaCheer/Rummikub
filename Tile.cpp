@@ -16,37 +16,30 @@
 #include "ColorUtils.h"
 #include <iostream>
 
-Tile::Tile() : color(Color::NONE), number(0) {}
+void initTile(Tile& t) {
+	t.color = Color::NONE;
+	t.number = 0;
+}
 
-Tile::Tile(Color c,int num) {
-	if (num < 1 || num > 13) {
+void initTile(Tile& t, Color c, int number) {
+	if (number < 1 || number > 13) {
 		throw "Tile number must be between 1 and 13";
 	}
-	number = num;
-	color = c;
+	t.color = c;
+	t.number = number;
 }
 
-
-Color Tile::getColor() const {
-	return color;
-}
-int Tile::getNumber() const {
-	return number;
+Color getTileColor(const Tile& t) {
+	return t.color;
 }
 
+int getTileNumber(const Tile& t) {
+	return t.number;
+}
 
-void Tile::print() const {
-	std::cout << colorToAnsi(color)
-		<< number
+void printTile(const Tile& t) {
+	std::cout << colorToAnsi(t.color)
+		<< t.number
 		<< "\033[0m";
 }
 
-Tile Tile::Joker() {
-	Tile t;
-	t.joker = true;
-	return t;
-}
-
-bool Tile::isJoker() const {
-	return joker;
-}

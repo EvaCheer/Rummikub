@@ -15,23 +15,16 @@
 #pragma once
 #include "Color.h"
 
-class Tile {
+struct Tile {
 	Color color;
 	int number;
-	bool joker;
-
-public:
-	Tile();
-	Tile(Color c,int num);
-	static Tile Joker();
-
-	Color getColor() const;
-	int getNumber() const; 
-	bool isJoker() const;
-
-	void print() const;
 };
 
-//class Joker : Tile {
-//
-//};
+void initTile(Tile& t);
+void initTile(Tile& t, Color c, int number);
+
+Color getTileColor(const Tile& t);
+int getTileNumber(const Tile& t);
+
+void printTile(const Tile& t);
+

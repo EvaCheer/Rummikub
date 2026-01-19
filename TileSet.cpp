@@ -15,41 +15,47 @@
 #include "TileSet.h"
 #include <cstdlib>
 
+static void initialize(TileSet& set) {
+	static const Color COLORS[] = {
+		Color::RED,
+		Color::BLUE,
+		Color::YELLOW,
+		Color::BLACK
+	};
 
-TileSet::TileSet() {
-	size = 0;
-	initialize();
-}
-
-int TileSet::getSize() const {
-	return size;
-}
-Tile TileSet::getTile(int index) const {
-	return tiles[index];
-}
-void TileSet::initialize() {
-	static const Color COLORS[] = { Color::RED, Color::BLUE, Color::YELLOW, Color::BLACK };
+	set.size = 0;
 
 	for (Color c : COLORS) {
 		for (int n = 1; n <= 13; n++) {
-			tiles[size++] = Tile(c, n);
-			tiles[size++] = Tile(c, n);
+			initTile(set.tiles[set.size++], c, n);
+			initTile(set.tiles[set.size++], c, n);
 		}
 	}
 }
 
+void initTileSet(TileSet& set) {
+	initialize(set);
+}
 
-void TileSet::shuffle() {
-	for (int i = size - 1; i > 0; i--) {
+int getTileSetSize(const TileSet& set) {
+	return set.size;
+}
+
+Tile getTileFromSet(const TileSet& set, int index) {
+	return set.tiles[index];
+}
+
+void shuffleTileSet(TileSet& set) {
+	for (int i = set.size - 1; i > 0; i--) {
 		int j = std::rand() % (i + 1);
 
-		Tile temp = tiles[i];
-		tiles[i] = tiles[j];
-		tiles[j] = temp;
+		Tile temp = set.tiles[i];
+		set.tiles[i] = set.tiles[j];
+		set.tiles[j] = temp;
 	}
 }
 
-//TODO: handle size = 0; tileSet isEmpty()
-Tile TileSet::drawATile() {
-	return tiles[--size];
+Tile tileSetDraw(TileSet& set) {
+	// TODO: handle end of set
+	return set.tiles[--set.size];
 }

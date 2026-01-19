@@ -15,18 +15,16 @@
 #pragma once
 #include "Tile.h"
 
-class TileSet {
+struct TileSet {
 	Tile tiles[104];
 	int size;
-
-public:
-	TileSet();
-
-	int getSize() const;
-	Tile getTile(int index) const;
-	void shuffle();
-	Tile drawATile();
-
-private:
-	void initialize();
 };
+
+void initTileSet(TileSet& set);
+
+int getTileSetSize(const TileSet& set);
+Tile getTileFromSet(const TileSet& set, int index);
+
+void shuffleTileSet(TileSet& set);
+Tile tileSetDraw(TileSet& set);
+
