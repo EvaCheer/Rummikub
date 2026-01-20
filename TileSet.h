@@ -9,7 +9,8 @@
 * @idnumber 0MI0600109
 * @compiler VC
 *
-* <TileSet header>
+* <TileSet struct that holds all tiles in the set>
+* <forward declaration of functions for initialization, access and actions>
 *
 */
 #pragma once
@@ -25,6 +26,6 @@ void initTileSet(TileSet& set);
 int getTileSetSize(const TileSet& set);
 Tile getTileFromSet(const TileSet& set, int index);
 
-void shuffleTileSet(TileSet& set);
+void tileSetShuffle(TileSet& set);
 Tile tileSetDraw(TileSet& set);
 

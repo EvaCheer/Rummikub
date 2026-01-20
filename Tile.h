@@ -9,7 +9,7 @@
 * @idnumber 0MI0600109
 * @compiler VC
 *
-* <Tile header>
+* <Tile struct, functions for initialization, access controls, utility>
 *
 */
 #pragma once

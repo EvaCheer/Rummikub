@@ -9,112 +9,123 @@
 * @idnumber 0MI0600109
 * @compiler VC
 *
-* <table has sequences>
-* <uses sequences' logic checks>
+* <handling the sequences on the table and validating the table>
+*
+*
 */
 #include "Table.h"
 #include <iostream>
 
-Table::Table() : size(0) {}
-
-int Table::getSize() const
+void initTable(Table& table) 
 {
-	return size;
+	table.size = 0;
 }
 
-const Sequence& Table::getSequence(int index) const
-{
-	return sequences[index];
+void copyTable(Table& dest, const Table& src) {
+	dest.size = src.size;
+	for (int i = 0; i < src.size; i++) {
+		tableAddSequence(dest, src.sequences[i]);
+	}
 }
 
-void Table::addSequence(const Tile& tile)
+int getTableSize(const Table& table) 
 {
-	if (size >= 20) {
+	return table.size;
+}
+
+const Sequence& getTableSequence(const Table& table, int index) 
+{
+	if (index < 0 || index >= table.size) {
+		throw "Invalid index when getting sequence from table.";
+	}
+	return table.sequences[index];
+}
+
+bool isValidTableIndex(const Table& table, int index) 
+{
+	return index >= 0 && index < table.size;
+}
+
+void tableAddSequenceWithTile(Table& table, const Tile& tile) 
+{
+	if (table.size >= MAX_TABLE_SEQUENCES) {
 		throw "Table is full, cannot add more sequences.";
 	}
 
-	Sequence newSeq(tile);
-
-	sequences[size++] = newSeq;
+	Sequence seq;
+	initSequenceWithTile(seq, tile);
+	table.sequences[table.size++] = seq;
 }
 
-void Table::addSequence(const Sequence& s) {
-	if (size >= 20) {
+void tableAddSequence(Table& table, const Sequence& seq) {
+	if (table.size >= MAX_TABLE_SEQUENCES) {
 		throw "Table is full, cannot add more sequences.";
 	}
 
-	sequences[size++] = s;
+	table.sequences[table.size++] = seq;
 }
 
-bool Table::placeTileFront(int seqIndex, const Tile& t)
-{
-	if (seqIndex < 0 || seqIndex >= size)
+bool tablePlaceTileFront(Table& table, int seqIndex, const Tile& tile) {
+	if (!isValidTableIndex(table, seqIndex))
 		return false;
-	return sequences[seqIndex].addFront(t);
+
+	return addFront(table.sequences[seqIndex], tile);
 }
 
-bool Table::placeTileBack(int seqIndex, const Tile& t)
-{
-	if (seqIndex < 0 || seqIndex >= size)
+bool tablePlaceTileBack(Table& table, int seqIndex, const Tile& tile) {
+	if (!isValidTableIndex(table, seqIndex))
 		return false;
-	return sequences[seqIndex].addBack(t);
+
+	return addBack(table.sequences[seqIndex], tile);
 }
 
-bool Table::splitSequence(int seqIndex, int splitIndex)
-{
-	if (seqIndex < 0 || seqIndex >= size)
+bool tableSplitSequence(Table& table, int seqIndex, int splitIndex) {
+	if (!isValidTableIndex(table, seqIndex))
 		return false;
 
-	if (splitIndex <= 0 || splitIndex >= sequences[seqIndex].getSize())
+	Sequence& seq = table.sequences[seqIndex];
+
+	if (splitIndex <= 0 || splitIndex >= seq.size)
 		return false;
 
-	if (size >= 20)
+	if (table.size >= MAX_TABLE_SEQUENCES)
 		return false;
 
-	Sequence newSeq = sequences[seqIndex].split(splitIndex);
+	Sequence newSeq = splitSequence(seq, splitIndex);
+	table.sequences[table.size++] = newSeq;
 
-	sequences[size++] = newSeq;
 	return true;
 }
 
-bool Table::mergeSequences(int first, int second)
-{
-	if (first < 0 || second < 0 ||
-		first >= size || second >= size ||
+bool tableMergeSequences(Table& table, int first, int second) {
+	if (!isValidTableIndex(table, first) ||
+		!isValidTableIndex(table, second) ||
 		first == second)
 		return false;
 
-	// Merge second into first
-	if (!sequences[first].mergeWith(sequences[second]))
+	if (!mergeSequences(table.sequences[first], table.sequences[second]))
 		return false;
 
-	// Remove second sequence
-	for (int i = second; i < size - 1; i++) {
-		sequences[i] = sequences[i + 1];
+	// Remove second sequence (shift left)
+	for (int i = second; i < table.size - 1; i++) {
+		table.sequences[i] = table.sequences[i + 1];
 	}
 
-	size--;
+	table.size--;
 	return true;
 }
 
-bool Table::isValid() const
-{
-	for (int i = 0; i < size; i++) {
-		if (!sequences[i].isValid()) return false;
+bool tableIsValid(const Table& table) {
+	for (int i = 0; i < table.size; i++) {
+		if (!isValidSequence(table.sequences[i]))
+			return false;
 	}
 	return true;
 }
 
-bool Table::isValidIndex(int index) const
-{
-	return index >= 0 && index < size;
-}
-
-void Table::print() const
-{
-	for (int i = 0; i < size; i++) {
+void printTable(const Table& table) {
+	for (int i = 0; i < table.size; i++) {
 		std::cout << i << ".) ";
-		sequences[i].print();
-		std::cout << std::endl;
+		printSequence(table.sequences[i]);
 	}
 }

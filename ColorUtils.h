@@ -9,12 +9,11 @@
 * @idnumber 0MI0600109
 * @compiler VC
 *
-* <ColorUtils header>
+* <ColorUtils forward declaration>
 *
 */
 #pragma once
 #include "Color.h"
-#include <iostream>
 
 const char* colorToString(Color c);
 const char* colorToAnsi(Color c);

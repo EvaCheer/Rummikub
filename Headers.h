@@ -18,4 +18,6 @@
 #include "Color.h"
 #include "ColorUtils.h"
 #include "Player.h"
+#include "Table.h"
+#include "Sequence.h"
 #include "Game.h"

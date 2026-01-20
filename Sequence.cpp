@@ -9,283 +9,209 @@
 * @idnumber 0MI0600109
 * @compiler VC
 *
-* <an array of tiles creates a sequence>
-* <used to be put on table>
-* <handles logic checks>
+* <Operations on a sequence of tiles>
+* <Validations>
 *
 */
 #include "Sequence.h"
 #include <iostream>
 
-Sequence::Sequence() : size(0)
+void initSequence(Sequence& seq) 
 {
+	seq.size = 0;
+}
+void initSequenceWithTile(Sequence& seq, const Tile& tile) 
+{
+	seq.size = 1;
+	seq.sequence[0] = tile;
 }
 
-Sequence::Sequence(const Tile& tile)
+int getSequenceSize(const Sequence& seq)
 {
-	size = 1;
-	sequence[0] = tile;
+	return seq.size;
 }
-
-int Sequence::getSize() const
+Tile getSequenceTile(const Sequence& seq, int index)
 {
-	return size;
-}
-
-Tile Sequence::getTile(int index) const
-{
-	if (index<0 || index>size) {
+	if (index < 0 || index >= seq.size) {
 		throw "Invalid index when getting a tile from sequence.";
 	}
-	return sequence[index];
+	return seq.sequence[index];
 }
-
 //same colors, a sequence of numbers
-bool Sequence::isRun() const {
-	if (size < 2) return false;
+bool isRun(const Sequence& seq)
+{
+	if (seq.size < 2) return false;
 
-	Color baseColor = sequence[0].getColor();
-
-	for (int i = 1; i < size; i++) {
-		if (sequence[i].getColor() != baseColor ||
-			sequence[i].getNumber() != sequence[i - 1].getNumber() + 1) {
+	Color baseColor = getTileColor(seq.sequence[0]);
+	for (int i = 1; i < seq.size; i++) {
+		if (getTileColor(seq.sequence[i]) != baseColor ||
+			getTileNumber(seq.sequence[i]) != getTileNumber(seq.sequence[i - 1]) + 1) {
 			return false;
 		}
 	}
 	return true;
 }
-
 //different colors, same numbers
-bool Sequence::isGroup() const {
-	if (size < 2) return false;
+bool isGroup(const Sequence& seq)
+{
+	if (seq.size < 2) return false;
 
-	int baseNumber = sequence[0].getNumber();
-
-	for (int i = 1; i < size; i++) {
-		if (sequence[i].getNumber() != baseNumber)
-			return false;
+	int baseNumber = getTileNumber(seq.sequence[0]);
+	for (int i = 1; i < seq.size; i++) {
+		if (getTileNumber(seq.sequence[i]) != baseNumber) return false;
 
 		for (int j = 0; j < i; j++) {
-			if (sequence[i].getColor() == sequence[j].getColor())
+			if (getTileColor(seq.sequence[i]) == getTileColor(seq.sequence[j])) 
 				return false;
 		}
 	}
 	return true;
 }
-
-
-bool Sequence::isValid() const
+bool isValidSequence(const Sequence& seq)
 {
-	if (size < 3)
+	if (seq.size < 3)
 		return false;
 
-	return isRun() || isGroup();
+	return isRun(seq) || isGroup(seq);
 }
 
-bool Sequence::canAddFront(const Tile& t) const
+bool canAddFront(const Sequence& seq, const Tile& t)
 {
-	if (size >= 13)
-		return false;
+	if (seq.size >= MAX_SEQUENCE_SIZE) return false;
+	if (seq.size == 0) return true;
 
-	if (size == 0)
-		return true;
-
-	if (t.isJoker())
-		return true;
-
-
-	if (size == 1) {
-		const Tile& a = sequence[0];
-		//Can become run
-		if (t.getColor() == a.getColor() &&
-			t.getNumber() == a.getNumber() - 1)
-			return true;
-
-		//Can become group
-		if (t.getNumber() == a.getNumber() &&
-			t.getColor() != a.getColor())
-			return true;
-
-		return false;
-	}
-
-	if (size == 2) {
-		const Tile& a = sequence[0];
-		const Tile& b = sequence[1];
-
-		//Run forming
-		if (a.getColor() == b.getColor()) {
-			return t.getColor() == a.getColor() &&
-				t.getNumber() == a.getNumber() - 1;
-		}
-
-		// Group forming
-		if (a.getNumber() == b.getNumber()) {
-			if (t.getNumber() != a.getNumber())
-				return false;
-
-			if (t.getColor() == a.getColor() ||
-				t.getColor() == b.getColor())
-				return false;
-
+	if (seq.size == 1) {
+		Tile a = seq.sequence[0];
+		if ((getTileColor(t) == getTileColor(a) && getTileNumber(t) == getTileNumber(a) - 1) ||
+			(getTileNumber(t) == getTileNumber(a) && getTileColor(t) != getTileColor(a))) {
 			return true;
 		}
-
 		return false;
 	}
 
-	if (isRun()) {
-		return t.getColor() == sequence[0].getColor() &&
-			t.getNumber() == sequence[0].getNumber() - 1;
+	if (seq.size == 2) {
+		Tile a = seq.sequence[0];
+		Tile b = seq.sequence[1];
+
+		if (getTileColor(a) == getTileColor(b)) { // run forming
+			return getTileColor(t) == getTileColor(a) && getTileNumber(t) == getTileNumber(a) - 1;
+		}
+		if (getTileNumber(a) == getTileNumber(b)) { // group forming
+			if (getTileNumber(t) != getTileNumber(a)) return false;
+			if (getTileColor(t) == getTileColor(a) || getTileColor(t) == getTileColor(b)) return false;
+			return true;
+		}
+		return false;
 	}
 
-	if (isGroup()) {
-		if (t.getNumber() != sequence[0].getNumber())
-			return false;
+	if (isRun(seq)) {
+		return getTileColor(t) == getTileColor(seq.sequence[0]) &&
+			getTileNumber(t) == getTileNumber(seq.sequence[0]) - 1;
+	}
 
-		for (int i = 0; i < size; i++) {
-			if (sequence[i].getColor() == t.getColor())
-				return false;
+	if (isGroup(seq)) {
+		if (getTileNumber(t) != getTileNumber(seq.sequence[0])) return false;
+		for (int i = 0; i < seq.size; i++) {
+			if (getTileColor(seq.sequence[i]) == getTileColor(t)) return false;
 		}
 		return true;
 	}
 
 	return false;
 }
-
-
-bool Sequence::canAddBack(const Tile& t) const
+bool canAddBack(const Sequence& seq, const Tile& t)
 {
-	if (size >= 13)
-		return false;
+	if (seq.size >= MAX_SEQUENCE_SIZE) return false;
+	if (seq.size == 0) return true;
 
-	if (size == 0) 
-		return true;
-
-	if (t.isJoker())
-		return true;
-
-
-	if (size == 1) {
-		const Tile& a = sequence[0];
-		//Can become run
-		if (t.getColor() == a.getColor() &&
-			t.getNumber() == a.getNumber() + 1)
-			return true;
-
-		//Can become group
-		if (t.getNumber() == a.getNumber() &&
-			t.getColor() != a.getColor())
-			return true;
-
-		return false;
-	}
-
-	if (size == 2) {
-		const Tile& a = sequence[0];
-		const Tile& b = sequence[1];
-
-		//Run forming
-		if (a.getColor() == b.getColor()) {
-			return t.getColor() == a.getColor() &&
-				t.getNumber() == b.getNumber() + 1;
-		}
-
-		// Group forming
-		if (a.getNumber() == b.getNumber()) {
-			if (t.getNumber() != a.getNumber())
-				return false;
-
-			if (t.getColor() == a.getColor() ||
-				t.getColor() == b.getColor())
-				return false;
-
+	if (seq.size == 1) {
+		Tile a = seq.sequence[0];
+		if ((getTileColor(t) == getTileColor(a) && getTileNumber(t) == getTileNumber(a) + 1) ||
+			(getTileNumber(t) == getTileNumber(a) && getTileColor(t) != getTileColor(a))) {
 			return true;
 		}
-
 		return false;
 	}
 
-	if (isRun()) {
-		return t.getColor() == sequence[0].getColor() &&
-			t.getNumber() == sequence[size - 1].getNumber() + 1;
+	if (seq.size == 2) {
+		Tile a = seq.sequence[0];
+		Tile b = seq.sequence[1];
+
+		if (getTileColor(a) == getTileColor(b)) { // run forming
+			return getTileColor(t) == getTileColor(a) && getTileNumber(t) == getTileNumber(b) + 1;
+		}
+		if (getTileNumber(a) == getTileNumber(b)) { // group forming
+			if (getTileNumber(t) != getTileNumber(a)) return false;
+			if (getTileColor(t) == getTileColor(a) || getTileColor(t) == getTileColor(b)) return false;
+			return true;
+		}
+		return false;
 	}
 
-	if (isGroup()) {
-		if (t.getNumber() != sequence[0].getNumber())
-			return false;
+	if (isRun(seq)) {
+		return getTileColor(t) == getTileColor(seq.sequence[0]) &&
+			getTileNumber(t) == getTileNumber(seq.sequence[seq.size - 1]) + 1;
+	}
 
-		for (int i = 0; i < size; i++) {
-			if (sequence[i].getColor() == t.getColor())
-				return false;
+	if (isGroup(seq)) {
+		if (getTileNumber(t) != getTileNumber(seq.sequence[0])) return false;
+		for (int i = 0; i < seq.size; i++) {
+			if (getTileColor(seq.sequence[i]) == getTileColor(t)) return false;
 		}
 		return true;
 	}
 
 	return false;
 }
-
-bool Sequence::addFront(const Tile& t)
+bool addFront(Sequence& seq, const Tile& t)
 {
-	if (!canAddFront(t))
-		return false;
+	if (!canAddFront(seq, t)) return false;
 
-	// shift right
-	for (int i = size; i > 0; i--) {
-		sequence[i] = sequence[i - 1];
+	for (int i = seq.size; i > 0; i--) {
+		seq.sequence[i] = seq.sequence[i - 1];
 	}
+	seq.sequence[0] = t;
+	seq.size++;
+	return true;
+}
+bool addBack(Sequence& seq, const Tile& t)
+{
+	if (!canAddBack(seq, t)) return false;
 
-	sequence[0] = t;
-	size++;
+	seq.sequence[seq.size++] = t;
 	return true;
 }
 
-bool Sequence::addBack(const Tile& t)
+bool canMergeWith(const Sequence& seq1, const Sequence& seq2) 
 {
-	if (!canAddBack(t))
-		return false;
-
-	sequence[size] = t;
-	size++;
-	return true;
+	return seq1.size + seq2.size <= MAX_SEQUENCE_SIZE;
 }
-
-bool Sequence::canMergeWith(const Sequence& other) const
+bool mergeSequences(Sequence& seq1, const Sequence& seq2) 
 {
-	return size + other.size <= 14;
-}
-
-//merges invalid sequences too
-bool Sequence::mergeWith(const Sequence& other)
-{
-	if (!canMergeWith(other))
-		return false;
-
-	for (int i = 0; i < other.size; i++) {
-		sequence[size++] = other.sequence[i];
+	if (!canMergeWith(seq1, seq2)) return false;
+	for (int i = 0; i < seq2.size; i++) {
+		seq1.sequence[seq1.size++] = seq2.sequence[i];
 	}
-
 	return true;
 }
-
-
-Sequence Sequence::split(int index) {
+Sequence splitSequence(Sequence& seq, int index) 
+{
 	Sequence second;
+	initSequence(second);
 
-	for (int i = index; i < size; i++) {
-		second.sequence[second.size++] = sequence[i];
+	for (int i = index; i < seq.size; i++) {
+		second.sequence[second.size++] = seq.sequence[i];
 	}
 
-	size = index;
+	seq.size = index;
 	return second;
 }
 
-
-void Sequence::print() const {
-	for (int i = 0; i < size; i++) {
-		sequence[i].print();
+void printSequence(const Sequence& seq)
+{
+	for (int i = 0; i < seq.size; i++) {
+		printTile(seq.sequence[i]);
 		std::cout << " ";
 	}
+	std::cout << std::endl;
 }
-
-

@@ -9,7 +9,7 @@
 * @idnumber 0MI0600109
 * @compiler VC
 *
-* <handles a tile>
+* <functions for tile initialization, access controls, utility>
 *
 */
 #include "Tile.h"

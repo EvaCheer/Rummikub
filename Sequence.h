@@ -9,36 +9,38 @@
 * @idnumber 0MI0600109
 * @compiler VC
 *
-* <Sequence header>
+* <Sequence struct and function declarations related to>
+* <doing operations on a sequence of tiles>
 *
 */
 #pragma once
 #include "Tile.h"
 
-class Sequence {
-	Tile sequence[13];
+#define MAX_SEQUENCE_SIZE 13
+
+struct Sequence {
+	Tile sequence[MAX_SEQUENCE_SIZE];
 	int size;
-
-public:
-	Sequence();
-	Sequence(const Tile& tile);
-
-	int getSize() const;
-	Tile getTile(int index) const;
-	bool isValid() const;
-
-	//TODO: alter for JOKER tile
-	bool canAddFront(const Tile& t) const;
-	bool canAddBack(const Tile& t) const;
-	bool canMergeWith(const Sequence& other) const;
-	bool addFront(const Tile& t);
-	bool addBack(const Tile& t);
-	bool mergeWith(const Sequence& other);
-	Sequence split(int index);
-
-	void print() const;
-
-private:
-	bool isRun() const;
-	bool isGroup() const;
 };
+
+void initSequence(Sequence& seq);
+void initSequenceWithTile(Sequence& seq, const Tile& tile);
+
+int getSequenceSize(const Sequence& seq);
+Tile getSequenceTile(const Sequence& seq, int index);
+
+bool isRun(const Sequence& seq);
+bool isGroup(const Sequence& seq);
+bool isValidSequence(const Sequence& seq);
+
+bool canAddFront(const Sequence& seq, const Tile& t);
+bool canAddBack(const Sequence& seq, const Tile& t);
+bool addFront(Sequence& seq, const Tile& t);
+bool addBack(Sequence& seq, const Tile& t);
+
+bool canMergeWith(const Sequence& seq1, const Sequence& seq2);
+bool mergeSequences(Sequence& seq1, const Sequence& seq2);
+Sequence splitSequence(Sequence& seq, int index);
+
+void printSequence(const Sequence& seq);
+

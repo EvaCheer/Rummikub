@@ -1,12 +1,6 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(452,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (Rummicube.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  ColorUtils.cpp
   Game.cpp
-  Player.cpp
   Rummikub.cpp
-  Sequence.cpp
-  Table.cpp
-  Tile.cpp
-  TileSet.cpp
   Generating Code...
-D:\Other stuff\Projects\FMI\UP\Rummikub\ColorUtils.cpp(18): warning C4715: 'colorToString': not all control paths return a value
+D:\Other stuff\Projects\FMI\UP\Rummikub\Rummikub.cpp(36,22): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   Rummikub.vcxproj -> D:\Other stuff\Projects\FMI\UP\Rummikub\x64\Debug\Rummikub.exe

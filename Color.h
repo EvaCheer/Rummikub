@@ -9,12 +9,12 @@
 * @idnumber 0MI0600109
 * @compiler VC
 *
-* <Color enum class used for the tiles>
+* <Color enum used for the tiles>
 *
 */
 #pragma once
 
-enum class Color {
+enum Color {
 	YELLOW,
 	RED,
 	BLUE,

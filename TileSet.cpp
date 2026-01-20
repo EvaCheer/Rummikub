@@ -9,7 +9,7 @@
 * @idnumber 0MI0600109
 * @compiler VC
 *
-* <handles the deck of tiles>
+* <definitions of functions for initialization, access and actions>
 *
 */
 #include "TileSet.h"
@@ -45,7 +45,7 @@ Tile getTileFromSet(const TileSet& set, int index) {
 	return set.tiles[index];
 }
 
-void shuffleTileSet(TileSet& set) {
+void tileSetShuffle(TileSet& set) {
 	for (int i = set.size - 1; i > 0; i--) {
 		int j = std::rand() % (i + 1);
 
